@@ -20,7 +20,6 @@ COPY . .
 #Declare host and port as environment variables
 ENV DB_HOST=host.docker.internal
 ENV DB_USER=postgres
-ENV DB_PASSWORD=Veiga09!
 
 # Default command to run your script
 CMD ["uv", "run", "python", "main.py"]
