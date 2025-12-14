@@ -23,4 +23,4 @@ ENV DB_USER=postgres
 ENV DB_PASSWORD=Veiga09!
 
 # Default command to run your script
-CMD ["uv", "run", "python", "main.py"]
+CMD ["uv", "run", "main.py"]

@@ -1,22 +1,31 @@
-import json
-import psycopg
-import os
-import subprocess
-import sys
-from dotenv import load_dotenv
-import logging
+def init_process():
+    import json
+    import psycopg2 as psycopg
+    import os
+    import logging
+    # ---------- Database Connection ----------
+    conn = psycopg.connect(
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        host=os.environ.get("DB_HOST", "localhost"),
+        port="5432"
+    )
+    logging.info("Initializing process...")
+    download_files()
+    logging.info("Inserting data into database...")
+    cur = conn.cursor()
+    for file in os.listdir("../root/HealthData/FitFiles/Activities"):
+        if "activity_details_" in file:
+            with open("../root/HealthData/FitFiles/Activities/"+file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                insert_data(data,cur)
+        # ---------- Commit ----------
+    conn.commit()
+    cur.close()
+    conn.close()
 
-load_dotenv()
-
-# ---------- Database Connection ----------
-conn = psycopg.connect(
-    user=os.environ.get("DB_USER"),
-    password=os.environ.get("DB_PASSWORD"),
-    host=os.environ.get("DB_HOST", "localhost"),
-    port="5432"
-)
-
-
+    print("✅ Data inserted successfully!")
+    
 def insert_data(data, cur):
     # ---------- Insert User Info ----------
     user_info = data["metadataDTO"]["userInfoDto"]
@@ -186,26 +195,10 @@ def insert_data(data, cur):
             ))
 
 def download_files():
+    import subprocess
+    import sys
+    import os
+    import logging
     logging.info("Starting download...")
     cli_path = os.path.join(os.path.dirname(__file__), '.venv', 'bin', 'garmindb_cli.py')
     subprocess.run([sys.executable, cli_path, '--all', '--download', '--import', '--analyze', '--latest'])
-
-def init_process():
-    logging.info("Initializing process...")
-    download_files()
-    logging.info("Inserting data into database...")
-    cur = conn.cursor()
-    for file in os.listdir("../root/HealthData/FitFiles/Activities"):
-        if "activity_details_" in file:
-            with open("../root/HealthData/FitFiles/Activities/"+file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                insert_data(data,cur)
-        # ---------- Commit ----------
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    print("✅ Data inserted successfully!")
-
-if __name__ == "__main__":
-    init_process()

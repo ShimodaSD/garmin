@@ -14,3 +14,5 @@ wheels/
 garmindb.log
 HealthData
 .GarminDb
+*.log
+*.parquet

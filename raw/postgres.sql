@@ -202,3 +202,14 @@ CREATE TABLE splits (
     no_of_splits INT,
     UNIQUE (activity_id, distance, duration, average_speed)
 );
+
+CREATE TABLE activity_record (
+  activity_id BIGINT REFERENCES activities(activity_id) ON DELETE CASCADE,
+  record_id integer,
+  position_lng double precision,
+  position_lat double precision,
+  distance double precision,
+  heart_rate integer,
+  activity_timestamp timestamp NOT null,
+  primary key(activity_id,record_id,activity_timestamp)
+)
