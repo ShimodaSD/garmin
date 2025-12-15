@@ -188,7 +188,7 @@ def insert_data(data, cur):
 def download_files():
     logging.info("Starting download...")
     cli_path = os.path.join(os.path.dirname(__file__), '.venv', 'bin', 'garmindb_cli.py')
-    subprocess.run([sys.executable, cli_path, '--all', '--download', '--import', '--analyze', '--latest'])
+    subprocess.run([sys.executable, cli_path, '--all', '--download', '--import', '--analyze'])
 
 def init_process():
     logging.info("Initializing process...")
@@ -196,8 +196,10 @@ def init_process():
     logging.info("Inserting data into database...")
     cur = conn.cursor()
     for file in os.listdir("../root/HealthData/FitFiles/Activities"):
+    #for file in os.listdir("../HealthData/FitFiles/Activities"):
         if "activity_details_" in file:
             with open("../root/HealthData/FitFiles/Activities/"+file, "r", encoding="utf-8") as f:
+            #with open("../HealthData/FitFiles/Activities/"+file, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 insert_data(data,cur)
         # ---------- Commit ----------
